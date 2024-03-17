@@ -1,0 +1,90 @@
+<div class="card">
+    <h5 class="card-header">Laporan Penjualan</h5>
+    <!-- Form Pencarian -->
+    <form action="<?= base_url('laporan') ?>" method="get">
+        <div class="modal-body">
+            <div class="row">
+                <div class="col">
+                    <label for="tanggal_mulai" class="form-label">Dari</label>
+                    <input type="date" class="form-control" id="tanggal_mulai" name="tanggal_mulai">
+                </div>
+                <div class="col">
+                    <label for="tanggal_selesai" class="form-label">Sampai</label>
+                    <input type="date" class="form-control" id="tanggal_selesai" name="tanggal_selesai">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Tutup</button>
+            <button type="submit" class="btn btn-primary">Cari</button>
+			<div class="row no-print">
+            <div class="col-xs-12">
+                <button onclick="window.print()" class="btn btn-danger shadow float-right">Cetak Laporan PDF <i
+                        class="fa fa-print"></i></button>
+            </div>
+        </div>
+        </div>
+    </form>
+
+    <div class="row">
+        <div class="col-xs-12 table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Tanggal</th>
+                        <th>No Nota</th>
+                        <th>Pelanggan</th>
+                        <th>Produk</th>
+                        <th>Jumlah</th>
+                        <th>Harga Per Barang</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $no = 1;
+                    $current_pelanggan = ''; // Inisialisasi pelanggan saat ini
+                    $total = 0; // Inisialisasi total harga
+                    foreach ($penjualan as $data) {
+                        ?>
+                        <tr>
+                            <!-- Tampilkan nomor, tanggal, nomor nota, dan nama pelanggan hanya pada baris pertama untuk setiap pelanggan -->
+                            <?php if ($data['nama_pelanggan'] != $current_pelanggan) { ?>
+                                <td><?= $no++; ?></td>
+                                <td><?= $data['tanggal'] ?></td>
+                                <td><?= $data['kode_penjualan'] ?></td>
+                                <td><?= $data['nama_pelanggan'] ?></td>
+                            <?php } else { ?>
+                                <!-- Kosongkan sel untuk kolom nomor, tanggal, nomor nota, dan nama pelanggan jika pelanggan sama -->
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            <?php } ?>
+                            <!-- Tampilkan nama produk, jumlah, dan harga per barang -->
+                            <td><?= $data['nama_produk'] ?></td>
+                            <td><?= $data['jumlah'] ?></td>
+                            <td>Rp. <?= number_format($data['harga']) ?></td>
+                            <!-- Hitung total harga per baris -->
+                            <?php $total_per_barang = $data['jumlah'] * $data['harga']; ?>
+                        </tr>
+                        <?php
+                        // Tambahkan total harga per barang ke total keseluruhan
+                        $total += $total_per_barang;
+
+                        // Simpan nama pelanggan saat ini
+                        $current_pelanggan = $data['nama_pelanggan'];
+                        ?>
+                    <?php } ?>
+                    <!-- Tampilkan total keseluruhan di baris terakhir -->
+                    <tr>
+                        <td colspan="6">Total Keseluruhan</td>
+                        <td>Rp. <?= number_format($total) ?></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+</div>
